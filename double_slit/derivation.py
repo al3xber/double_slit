@@ -59,11 +59,11 @@ def calc_derivatives(x, *, sx, intensity, a2, a3, x0, phase, offset):
     
     #---------------------------------------------------
     #Outside of the interval (-0.05,0.05) the taylor approximation is inexact (error > 10**-17)
-    #therefor we use the cotangens and sinus approximation outside of the interval, see analysis.ipynb for more details
+    #therefor we use the true formula outside of the interval, see analysis.ipynb for more details
     #---------------------------------------------------
     
     mask = np.abs(sdx)>=0.05
-    result[mask]=(1/np.tan(sdx[mask])-1/sdx[mask])*np.sin(sdx[mask])/sdx[mask]    
+    result[mask]=(sdx[mask]*np.cos(sdx[mask])-np.sin(sdx[mask]))/(sdx[mask]**2)
     #---------------------------------------------------
     
     dy_dx0    = intensity*a2*a3*scr*term1-intensity*cr2*sx*result*sinc_val 
