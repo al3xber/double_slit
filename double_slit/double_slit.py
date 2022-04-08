@@ -41,22 +41,22 @@ def double_slit_orig(x, a0, a1, a2, a3, a4, a5, a6):
     return II
 
 
-def double_slit(x, *, sx, intensity, a2, a3, x0, phase, offset):
+def double_slit(x, *, sx, intensity, visibility, a3, x0, phase, offset):
     """
-    Numericaly more stable calculation of light intensity
+    Numerically more stable calculation of light intensity. See analysis folder for more information
     Args:
         x:   running parameter
         x0:  center of x
         scale: scaling of x axis
         
         a1:
-        a2:
+        visibility:
         a3:
         x0:    
     """
     
     if x0!=0:
-        dx = x0*(x/x0 - 1)   #equivalent to x-x0
+        dx = x0*(x/x0 - 1)   #equivalent to x-x0, changed for numerical stability
     else: # case x0==0
         dx = x 
     
@@ -64,7 +64,7 @@ def double_slit(x, *, sx, intensity, a2, a3, x0, phase, offset):
     
     sinc_val = sinc(sdx/np.pi)             #sinc(x)= sin(x*pi)/(x*pi) 
     term1 = 1 / 2 * sinc_val**2
-    term2_inner = a2 * np.cos(a3 * dx + phase) 
+    term2_inner = visibility * np.cos(a3 * dx + phase) 
     term2 = 1 + term2_inner
     
     y = intensity * term1 * term2 + offset
