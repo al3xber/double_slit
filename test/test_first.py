@@ -17,7 +17,7 @@ def test_signature():
     None.
 
     """
-    double_slit.double_slit(0, intensity=1, sx=10, x0=0, offset=0, a2=2, a3=2, phase=1.5 * np.pi)
+    double_slit.double_slit(0, intensity=1, sx=10, x0=0, offset=0, visibility=2, a3=2, phase=1.5 * np.pi)
     
 def test_scipy_and_sympy_sinc():
     """
@@ -47,9 +47,9 @@ def test_offset():
     """
     z = np.linspace(-1, 1, num=10*60+1)     
     
-    assert np.all(double_slit.double_slit(z, intensity=1, sx=10, x0=0, offset=1, a2=2, a3=2, phase=1.5 * np.pi)  == \
-           double_slit.double_slit(z, intensity=1, sx=10, x0=0, offset=0, a2=2, a3=2, phase=1.5 * np.pi) + 1)
+    assert np.all(double_slit.double_slit(z, intensity=1, sx=10, x0=0, offset=1, visibility=2, a3=2, phase=1.5 * np.pi)  == \
+           double_slit.double_slit(z, intensity=1, sx=10, x0=0, offset=0, visibility=2, a3=2, phase=1.5 * np.pi) + 1)
            
-    assert np.all(double_slit.calc_derivatives(z, intensity=1, sx=10, x0=0.1, offset=0, a2=2, a3=2, phase=1.5 * np.pi)[3] == np.ones_like(z))
+    assert np.all(double_slit.calc_derivatives(z, intensity=1, sx=10, x0=0.1, offset=0, visibility=2, a3=2, phase=1.5 * np.pi)[3] == np.ones_like(z))
 
 

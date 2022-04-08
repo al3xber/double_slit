@@ -15,7 +15,7 @@ x0 = sympy.Symbol('x_0', real=True)
 sx = sympy.Symbol('s_x', real=True)
 intensity = sympy.Symbol('I', real=True)
 phase = sympy.Symbol(r'\varphi', real=True)
-a2 = sympy.Symbol('a_2', real=True)
+visibility = sympy.Symbol('vis', real=True)
 a3 = sympy.Symbol('a_3', real=True)
 offset = sympy.Symbol('y_0', real=True)
 #-----------------------------------------------
@@ -26,7 +26,7 @@ sdx = sx * dx
     
 sinc_val = sympy.sinc(sdx)
 term1 = sympy.Rational(1, 2) * sinc_val**2
-term2_inner = a2 * sympy.cos(a3 * dx + phase)
+term2_inner = visibility * sympy.cos(a3 * dx + phase)
 term2 = 1 + term2_inner 
     
 y = intensity * term1 * term2 + offset #equals the final distribution
@@ -38,10 +38,10 @@ dy_dI = sympy.diff(y, intensity)
 dy_dxs = sympy.diff(y, sx)
 dy_dy0 = sympy.diff(y, offset)
 dy_dphase = sympy.diff(y, phase)
-dy_da2 = sympy.diff(y, a2)
+dy_dvisibility = sympy.diff(y, visibility)
 dy_da3 = sympy.diff(y, a3)
 
-derivs = [dy_dx0, dy_dI, dy_dxs, dy_dy0, dy_dphase, dy_da2, dy_da3] #list of all derivatives
+derivs = [dy_dx0, dy_dI, dy_dxs, dy_dy0, dy_dphase, dy_dvisibility, dy_da3] #list of all derivatives
 
 
 
@@ -55,10 +55,10 @@ def test_intensity_calc():
     """
     z = np.linspace(-1, 1, num=10*6+1) #interval and number of points to check
     
-    true_intensity = [y.evalf(subs={x: z_i,intensity: 1, sx:10, x0:0, offset:0, a2:2, a3:2, phase:1.5 * np.pi}) for z_i in z]
+    true_intensity = [y.evalf(subs={x: z_i,intensity: 1, sx:10, x0:0, offset:0, visibility:2, a3:2, phase:1.5 * np.pi}) for z_i in z]
                      #the function evalf takes a sympy expression and allows to insert values.
                      
-    calc_intensity = ds.double_slit(z, intensity=1, sx=10, x0=0, offset=0, a2=2, a3=2, phase=1.5 * np.pi)
+    calc_intensity = ds.double_slit(z, intensity=1, sx=10, x0=0, offset=0, visibility=2, a3=2, phase=1.5 * np.pi)
 
     assert np.max(np.abs(true_intensity-calc_intensity))<10**(-15)
 
@@ -75,9 +75,9 @@ def test_derivative_calc():
     
     exact_derivs=[]
     for i in range(len(derivs)):
-        exact_derivs.append([derivs[i].evalf(subs={x: z[j],intensity: 1,sx:10, x0:0.1, offset:0, a2:2, a3:2, phase:1.5 * np.pi}) for j in range(len(z))])
+        exact_derivs.append([derivs[i].evalf(subs={x: z[j],intensity: 1,sx:10, x0:0.1, offset:0, visibility:2, a3:2, phase:1.5 * np.pi}) for j in range(len(z))])
     
-    calc_derivs=ds.calc_derivatives(z, intensity=1, sx=10, x0=0.1, offset=0, a2=2, a3=2, phase=1.5 * np.pi)
+    calc_derivs=ds.calc_derivatives(z, intensity=1, sx=10, x0=0.1, offset=0, visibility=2, a3=2, phase=1.5 * np.pi)
     
     for i in range(len(derivs)):
         assert np.max(np.abs(exact_derivs[i]-calc_derivs[i]))<10**(-13)
