@@ -76,6 +76,8 @@ class double_slit_reg():
         solution after fit
     fit_success: boolean
                  True if fit was successfull else False
+    res: scipy class object
+         result of gradient descent fit
     ----------
     """
 
@@ -108,6 +110,7 @@ class double_slit_reg():
         
         error_list = []  #we remember the errors and parameters of the (bad) predictions, s.t. we can pick the best one,
         para_list = []   #in case all predictions are bad
+        res_list = []
         
         self.fit_success = False  
 
@@ -115,21 +118,24 @@ class double_slit_reg():
         
             res = least_squares(to_minimize, x0_value.to_array(), jac, args=(X,y),  #least_squares by scipy.optimize
                            bounds=([0,0,-np.inf,-np.inf,-np.inf,-np.inf,0], np.inf))
-            
+                        
             if res.cost < 1300*len(X) and abs(res.x.tolist()[5])<1:  #hand-picked border for a good prediction. 2nd condition 
                                                                      #checks if the solution is oscillating too strong
                 self.cost = res.cost
                 self.x = ds_para(*res.x.tolist())
                 self.fit_success = True 
+                self.res = res
                 break  #in case we found a good prediction, remember the parameters and end fitting
             elif abs(res.x.tolist()[5])<1:  #check if the solution is oscillating too strong, if so ignore 
                 error_list.append(res.cost)
                 para_list.append(res.x)
+                res_list.append(res)
                 
         if not self.fit_success:  #in case we were not able to find a good prediction, take the best we have seen.
             best_idx = np.argmin(error_list)            
             self.cost = error_list[best_idx]
             self.x = ds_para(*para_list[best_idx].tolist())
+            self.res = res_list[best_idx]
         
     def predict(self,X):
         """
